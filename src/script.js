@@ -1,20 +1,25 @@
+const BASE = location.hostname.includes('github.io')
+    ? 'data.json'
+    : '/api';
+
 // BOTÓN
 document.getElementById('btn').addEventListener('click', () => {
     alert('✅ ¡El sitio funciona!');
 });
 
-console.log('🚀 Sitio cargado');
-
-
-// FUNCIÓN PARA CARGAR DATOS
+// FUNCIÓN
 async function cargar(endpoint, elementoId) {
     const lista = document.getElementById(elementoId);
 
     try {
-        const res = await fetch(`/api/${endpoint}`);
+        const res = await fetch(BASE);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const datos = await res.json();
+        const data = await res.json();
+
+        const datos = BASE === 'data.json'
+            ? data[endpoint]
+            : data;
 
         lista.innerHTML = datos.map(item =>
             `<li>${item.nombre}${
@@ -25,11 +30,10 @@ async function cargar(endpoint, elementoId) {
         ).join('');
 
     } catch (e) {
-        lista.innerHTML = `<li class="error">Error al conectar: ${e.message}</li>`;
+        lista.innerHTML = `<li class="error">Error: ${e.message}</li>`;
     }
 }
 
-
-// LLAMADAS A LA API
+// LLAMADAS
 cargar('productos', 'productos');
 cargar('categorias', 'categorias');
